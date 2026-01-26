@@ -2,14 +2,27 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Celeste mais le temps s'arrête</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Celeste mais le temps s'arrete - GameJam</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Celeste mais le temps s'arrête</h1>
-    <p>Nous y avons mis notre âme pour faire ce jeu, <strong>ALORS JOUE Y</strong></p>
-    <img src="Image/image0.jpg" alt="Gun image aggression">
-    <br>
-    <button type="button" id="bnt">Jouer</button>
+
+    <div id="menu-screen" class="screen active">
+        <h1>Celeste mais le temps s'arrete</h1>
+        <p>Utilisez les flèches pour bouger, Espace pour sauter.</p>
+        <p class="highlight">SHIFT pour figer le temps !</p>
+        <button id="start-btn">LANCER LE JEU</button>
+        <div id="high-score">Meilleur Score : 0</div>
+    </div>
+
+    <div id="game-over-screen" class="screen hidden">
+        <h1>GAME OVER</h1>
+        <button id="restart-btn">RECOMMENCER</button>
+    </div>
+
+    <script src="classes.js"></script>
+    <script src="levels.js"></script>
+    <script src="main.js"></script>
 </body>
 </html>
