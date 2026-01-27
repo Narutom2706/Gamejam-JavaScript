@@ -11,3 +11,4 @@ export const KEYS = {
     JUMP: ['ArrowUp','z','Z'],
     TIME_STOP: ['Shift']
 }
+

@@ -33,6 +33,9 @@ let isTimeStopped = false;
 let timeStopDuration = 0;
 let timeStopCooldown = 0;
 
+let lastTime = 0;
+const targetFPS = 60;
+const frameInterval = 1000 / targetFPS; // Environ 16.6ms
 
 // Initialisation du niveau
 function initLevel() {
@@ -59,7 +62,27 @@ function initLevel() {
 }
 chrono.update()
 
-function animate() {
+function animate(timestamp) {
+    
+    requestAnimationFrame(animate);
+    if (!lastTime) {
+        lastTime = performance.now();
+        return;
+    }
+
+    if (!lastTime) {
+        lastTime = timestamp;
+    }
+
+    // Calcul du temps écoulé depuis la dernière image
+    const deltaTime = timestamp - lastTime;
+    lastTime = timestamp;
+
+    if (deltaTime > 100) { 
+        requestAnimationFrame(animate);
+        return;
+    }
+    const correction = deltaTime / (1000 / 60);
 
 // ZA WARUDO
     if (input.isPressed(KEYS.TIME_STOP) && !isTimeStopped && timeStopCooldown <= 0) {
@@ -98,7 +121,7 @@ if (jojoGif) {
     }
 
     // Définir la vitesse du monde (0 ou 1)
-    let worldSpeed = isTimeStopped ? 0 : 1;
+    let worldSpeed = (isTimeStopped ? 0 : 1) * correction;
 
     if (isTimeStopped) {
         ctx.fillStyle = "#0084ff"; 
@@ -133,20 +156,21 @@ if (jojoGif) {
         cameraX = levelWidth - canvas.width;
     }
 
-    ctx.save(); // On sauvegarde la position normale
-    ctx.translate(-cameraX, 0); // On déplace TOUT vers la gauche
+    ctx.save();
+    ctx.translate(-cameraX, 0);
 
     blocks.forEach(block => block.draw(ctx));
 
     enemies.forEach(enemy => {
+        // On passe effectiveSpeed qui contient déjà la correction temporelle
         enemy.update(16, worldSpeed, player); 
         enemy.draw(ctx);
     });
 
-    player.update(input, blocks);
+    player.update(input, blocks, correction);
     player.draw(ctx);
 
-    ctx.restore()
+    ctx.restore();
 
     if (isTimeStopped) {
         ctx.save();
@@ -155,7 +179,7 @@ if (jojoGif) {
         ctx.restore();
     }
 
-    requestAnimationFrame(animate);
+    
     chrono.update();
 }
 

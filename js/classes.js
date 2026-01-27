@@ -1,4 +1,4 @@
-import { KEYS, GRAVITY } from './constants.js'; 
+import { KEYS } from './constants.js'; 
 import { rectIntersect } from './utils.js';
 
 export class Entity {
@@ -8,7 +8,6 @@ export class Entity {
         this.width = width;
         this.height = height;
         this.color = color;
-        this.jumpCooldown = 0;
     }
 
     draw(ctx) {
@@ -31,44 +30,37 @@ export class TimeSensitiveEntity extends Entity {
         this.y += this.vy * worldSpeed;
     }
 }
+
 export class Player extends Entity { 
     constructor(x, y) {
         super(x, y, 32, 32, "#00ff00");
         this.velX = 0;
         this.velY = 0;
-        this.speed = 2; // ici si vous voulez modifier la vitesse du perso
-        this.jumpForce = -12;
+        this.speed = 5; 
+        this.jumpForce = -15;
         this.isGrounded = false;
         this.jumpCooldown = 0;
     }
 
-    update(input, blocks) {
-
-        if (this.jumpCooldown > 0) {
-            this.jumpCooldown--;
-        }
+    update(input, blocks, correction = 1) {
+        if (this.jumpCooldown > 0) this.jumpCooldown -= correction;
         
         if (input.isPressed(KEYS.RIGHT)) this.velX = this.speed;
         else if (input.isPressed(KEYS.LEFT)) this.velX = -this.speed;
         else this.velX = 0;
 
-        this.x += this.velX;
+        this.x += this.velX * correction;
 
         for (const block of blocks) {
             if (rectIntersect(this, block)) {
-                if (this.velX > 0) { 
-                    this.x = block.x - this.width - 0.1;
-                } 
-                else if (this.velX < 0) { 
-                    this.x = block.x + block.width + 0.1;
-                }
+                if (this.velX > 0) this.x = block.x - this.width - 0.1;
+                else if (this.velX < 0) this.x = block.x + block.width + 0.1;
                 this.velX = 0;
             }
         }
 
-        this.velY += 0.5; /* Gravité */
-        this.y += this.velY;
-        
+        this.velY += 0.5 * correction; 
+        this.y += this.velY * correction;
         this.isGrounded = false; 
 
         for (const block of blocks) {
@@ -88,18 +80,10 @@ export class Player extends Entity {
         if ((input.isPressed(KEYS.UP) || input.isPressed(KEYS.JUMP)) && this.isGrounded && this.jumpCooldown <= 0) {
             this.velY = this.jumpForce;
             this.isGrounded = false;
-            
-            this.jumpCooldown = 50; 
-        }
-
-        if (this.y > 800) {
-            this.x = 100;
-            this.y = 100;
-            this.velY = 0;
+            this.jumpCooldown = 5; 
         }
     }
 }
-
 
 export class Bat extends TimeSensitiveEntity {
     constructor(x, y, distance) {
@@ -173,18 +157,10 @@ export class Spike extends TimeSensitiveEntity {
 
      update() {
         if (!this.isRunning) return;
-
-        // Calcul du temps écoulé
         const currentTime = Date.now();
         const timeDiff = currentTime - this.startTime;
-
-        // On convertit en secondes avec 2 chiffres après la virgule 
         this.elapsed = (timeDiff / 1000).toFixed(2);
-
-        // Mise à jour de l'affichage HTML
-        if (this.element) {
-            this.element.innerText = this.elapsed;
-        }
+        if (this.element) this.element.innerText = this.elapsed;
     }
 
      stop() {
