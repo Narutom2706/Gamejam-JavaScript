@@ -20,17 +20,20 @@
     </div>
 
     <div id="game-screen" class="screen hidden">
-        <canvas id="gameCanvas"></canvas>
-        <div class="timer" id="timer">0</div>
-    </div>
+    <canvas id="gameCanvas"></canvas> 
+    <div id="ui-layer">Temps: <span id="timer">0.00</span>s</div>
+    <div id="div_die_counter">Nombre de mort : <span id="die_counter">0</span></div>
+</div>
 
     <div id="gameover-screen" class="screen hidden">
         <h1>GAME OVER</h1>
         <button id="restart-btn" class="big-button">RECOMMENCER</button>
     </div>
 
+    <audio id="jojo-sound" src="assets/song/zawarudo.mp3"></audio>
+    <img id="jojo-gif" src="assets/Image/zawarudo.gif" class="hidden" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 500px; z-index: 20; pointer-events: none; opacity: 0.8;">
+
     <script type="module" src="js/main.js"></script>
-    
 </body>
 </html>
 

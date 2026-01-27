@@ -8,6 +8,7 @@ export class Entity {
         this.width = width;
         this.height = height;
         this.color = color;
+        this.jumpCooldown = 0;
     }
 
     draw(ctx) {
@@ -38,9 +39,14 @@ export class Player extends Entity {
         this.speed = 2; // ici si vous voulez modifier la vitesse du perso
         this.jumpForce = -12;
         this.isGrounded = false;
+        this.jumpCooldown = 0;
     }
 
     update(input, blocks) {
+
+        if (this.jumpCooldown > 0) {
+            this.jumpCooldown--;
+        }
         
         if (input.isPressed(KEYS.RIGHT)) this.velX = this.speed;
         else if (input.isPressed(KEYS.LEFT)) this.velX = -this.speed;
@@ -60,7 +66,7 @@ export class Player extends Entity {
             }
         }
 
-        this.velY += 0.8; 
+        this.velY += 0.5; /* Gravité */
         this.y += this.velY;
         
         this.isGrounded = false; 
@@ -79,9 +85,11 @@ export class Player extends Entity {
             }
         }
 
-        if ((input.isPressed(KEYS.UP) || input.isPressed(KEYS.JUMP)) && this.isGrounded) {
+        if ((input.isPressed(KEYS.UP) || input.isPressed(KEYS.JUMP)) && this.isGrounded && this.jumpCooldown <= 0) {
             this.velY = this.jumpForce;
             this.isGrounded = false;
+            
+            this.jumpCooldown = 50; 
         }
 
         if (this.y > 800) {
@@ -93,7 +101,7 @@ export class Player extends Entity {
 }
 
 
-export class Saw extends TimeSensitiveEntity {
+export class Bat extends TimeSensitiveEntity {
     constructor(x, y, distance) {
         super(x, y, 40, 40, "red");
         this.startX = x;
@@ -104,7 +112,7 @@ export class Saw extends TimeSensitiveEntity {
     update(deltaTime, worldSpeed) {
         super.update(deltaTime, worldSpeed);
         if (worldSpeed > 0) {
-            if (this.x > this.startX + this.maxDistance) this.vx = -3;
+             if (this.x > this.startX + this.maxDistance) this.vx = -3;
             else if (this.x < this.startX) this.vx = 3;
         }
     }
@@ -147,5 +155,45 @@ export class Spike extends TimeSensitiveEntity {
         ctx.lineTo(this.x + this.width / 2, this.y);
         ctx.lineTo(this.x + this.width, this.y + this.height);
         ctx.fill();
+    }
+}
+
+ export class Chrono {
+     constructor() {
+         this.startTime = 0;
+         this.elapsed = 0;
+         this.isRunning = false;
+         this.element = document.getElementById('timer'); 
+     }
+
+     start() {
+         this.startTime = Date.now(); 
+         this.isRunning = true;
+     }
+
+     update() {
+        if (!this.isRunning) return;
+
+        // Calcul du temps écoulé
+        const currentTime = Date.now();
+        const timeDiff = currentTime - this.startTime;
+
+        // On convertit en secondes avec 2 chiffres après la virgule 
+        this.elapsed = (timeDiff / 1000).toFixed(2);
+
+        // Mise à jour de l'affichage HTML
+        if (this.element) {
+            this.element.innerText = this.elapsed;
+        }
+    }
+
+     stop() {
+        this.isRunning = false;
+    }
+
+     reset() {
+        this.startTime = Date.now();
+        this.elapsed = 0;
+        if (this.element) this.element.innerText = "0.00";
     }
 }

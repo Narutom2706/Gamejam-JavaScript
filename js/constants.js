@@ -8,6 +8,6 @@ export const KEYS = {
     UP: ['ArrowUp','z','Z'],
     LEFT: ['ArrowLeft','Q','q'],
     RIGHT: ['ArrowRight','D','d'],
-    JUMP: ['Z','z'],
+    JUMP: ['ArrowUp','z','Z'],
     TIME_STOP: ['Shift']
 }

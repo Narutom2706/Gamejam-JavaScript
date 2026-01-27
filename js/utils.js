@@ -4,3 +4,4 @@ export function rectIntersect(r1, r2) {
              r2.y > r1.y + r1.height || 
              r2.y + r2.height < r1.y);
 }
+
