@@ -1,4 +1,5 @@
 import { KEYS, GRAVITY } from './constants.js'; 
+import { rectIntersect } from './utils.js';
 
 export class Entity {
     constructor(x, y, width, height, color) {
@@ -34,36 +35,59 @@ export class Player extends Entity {
         super(x, y, 32, 32, "#00ff00");
         this.velX = 0;
         this.velY = 0;
-        this.speed = 5;
+        this.speed = 2; // ici si vous voulez modifier la vitesse du perso
         this.jumpForce = -12;
         this.isGrounded = false;
     }
 
-    update(input) {
-        if (input.isPressed(KEYS.RIGHT)) {
-            this.velX = this.speed;
-        } 
-        else if (input.isPressed(KEYS.LEFT)) {
-            this.velX = -this.speed;
-        } 
-        else {
-            this.velX = 0;
-        }
-        this.velY += GRAVITY;
-        this.x += this.velX;
-        this.y += this.velY;
+    update(input, blocks) {
+        
+        if (input.isPressed(KEYS.RIGHT)) this.velX = this.speed;
+        else if (input.isPressed(KEYS.LEFT)) this.velX = -this.speed;
+        else this.velX = 0;
 
-        if (this.y + this.height >= 600) { 
-            this.y = 600 - this.height;
-            this.velY = 0;              
-            this.isGrounded = true;    
-        } else {
-            this.isGrounded = false;
+        this.x += this.velX;
+
+        for (const block of blocks) {
+            if (rectIntersect(this, block)) {
+                if (this.velX > 0) { 
+                    this.x = block.x - this.width - 0.1;
+                } 
+                else if (this.velX < 0) { 
+                    this.x = block.x + block.width + 0.1;
+                }
+                this.velX = 0;
+            }
+        }
+
+        this.velY += 0.8; 
+        this.y += this.velY;
+        
+        this.isGrounded = false; 
+
+        for (const block of blocks) {
+            if (rectIntersect(this, block)) {
+                if (this.velY > 0) { 
+                    this.y = block.y - this.height - 0.1;
+                    this.velY = 0;
+                    this.isGrounded = true;
+                } 
+                else if (this.velY < 0) {
+                    this.y = block.y + block.height + 0.1;
+                    this.velY = 0;
+                }
+            }
         }
 
         if ((input.isPressed(KEYS.UP) || input.isPressed(KEYS.JUMP)) && this.isGrounded) {
             this.velY = this.jumpForce;
             this.isGrounded = false;
+        }
+
+        if (this.y > 800) {
+            this.x = 100;
+            this.y = 100;
+            this.velY = 0;
         }
     }
 }

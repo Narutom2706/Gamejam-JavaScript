@@ -44,15 +44,16 @@ function animate() {
     if (!gameRunning) return;
     
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+    
     blocks.forEach(block => block.draw(ctx));
 
     enemies.forEach(enemy => {
-        enemy.update(16, 1);
+        enemy.update(16, 1); 
         enemy.draw(ctx);
     });
 
-    player.update(input);
+    player.update(input, blocks); 
+    
     player.draw(ctx);
     
     requestAnimationFrame(animate);
