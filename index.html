@@ -1,36 +1,35 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Celeste Time Stop - GameJam</title>
+    <title>Celeste Time Stop</title>
     <link rel="stylesheet" href="style.css">
-    <script src="js/main.js" defer></script>
-    <script src="js/classes.js"></script>
-    <script src="js/inputs.js"></script>
 </head>
-    <body>
-
-        <div id="menu-screen" class="screen">
-            <div class="menu-content">
-                <h1>Celeste mais le temps s'arrete</h1>
-                <p>Flèches pour bouger / Espace pour sauter</p>
-                <p class="highlight">SHIFT pour figer le temps</p>
-                <button id="start-btn">LANCER LE JEU</button>
-                <div id="high-score">Meilleur Temps : 0</div>
-            </div>
+<body>
+    
+    <div id="menu-screen" class="screen">
+        <div class="menu-content">
+            <h1>Celeste mais le temps s'arrete</h1>
+            <p>ZQSD / Flèches pour bouger</p>
+            <p class="highlight">SHIFT pour figer le temps</p>
+            <button id="start-btn" class="big-button">LANCER LE JEU</button>
+            <div id="high-score">Meilleur Temps : 0</div>
         </div>
+    </div>
 
-        <div id="game-screen" class="screen hidden">
-            <canvas id="gameCanvas"></canvas>
-            <div id="ui-layer">Temps: <span id="timer">0</span>s</div>
-        </div>
+    <div id="game-screen" class="screen hidden">
+        <canvas id="gameCanvas"></canvas>
+        <div id="ui-layer">Temps: <span id="timer">0</span>s</div>
+    </div>
 
-        <div id="game-over-screen" class="screen hidden">
-            <h1>GAME OVER</h1>
-            <p>(t nul)</p>
-            <button id="restart-btn">RECOMMENCER</button>
-        </div>
+    <div id="gameover-screen" class="screen hidden">
+        <h1>GAME OVER</h1>
+        <button id="restart-btn" class="big-button">RECOMMENCER</button>
+    </div>
 
-    </body>
+    <script type="module" src="js/main.js"></script>
+</body>
 </html>
+
