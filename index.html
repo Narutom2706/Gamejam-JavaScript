@@ -10,9 +10,12 @@
     
     <div id="menu-screen" class="screen">
         <div class="menu-content">
-            <h1>Celeste mais tu a le pouvoir de Dio</h1>
-            <p>ZQSD / Flèches pour bouger</p>
+            <h1>Celeste mais tu as le pouvoir de Dio</h1>
+            <p> Z ou fleche du haut Pour sauter</p>
+            <p> Q - D ou fleche droite gauche Pour bouger</p>
             <p class="highlight">SHIFT pour figer le temps</p>
+            <p> Pour avoir le meilleurs score : </p>
+            <p class ="highlight"> Atteindre l'arriver avec le moins de mort et le moins d'utilisation du pouvoir avec le meilleurs temps</p></p>
             <button id="start-btn" class="big-button">LANCER LE JEU</button>
         </div>
     </div>
@@ -27,11 +30,13 @@
         </div>
     </div>
 
-    <div id="gameover-screen" class="screen hidden">
+    <div id="finish-screen" class="screen hidden">
         <div class="menu-content">
-            <h1>GAME OVER</h1>
-            <p>Tu as abusé du temps ? (ou alors t'es nul)</p>
-            <button id="restart-btn" class="big-button">RECOMMENCER</button>
+            <h1>🎉 BRAVO VOUS AVEZ GAGNÉ! 🎉</h1>
+            <p>Temps: <span id="final-time">0.00</span>s</p>
+            <p>Morts: <span id="final-deaths">0</span></p>
+            <p>Utilisations du pouvoir: <span id="final-timestops">0</span></p>
+            <button id="restart-btn" class="big-button">REJOUER</button>
         </div>
     </div>
 

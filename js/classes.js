@@ -25,7 +25,7 @@ export class TimeSensitiveEntity extends Entity {
         this.vy = 0;
     }
 
-    update(deltaTime, worldSpeed) {
+    update(deltaTime, worldSpeed, player, correction = 1) {
         this.x += this.vx * worldSpeed;
         this.y += this.vy * worldSpeed;
     }
@@ -34,114 +34,193 @@ export class TimeSensitiveEntity extends Entity {
 export class Block extends Entity {
     constructor(x, y) {
         super(x, y, 40, 40, "#444");
+
+        if (!Block.image) {
+            Block.image = new Image();
+            Block.image.src = 'assets/Image/Sprite/mur/mur.png';
+        }
+    }
+    
+    draw(ctx) {
+        if (Block.image && Block.image.complete) {
+            ctx.drawImage(Block.image, this.x, this.y, this.width, this.height);
+        } else {
+            ctx.fillStyle = this.color;
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+            ctx.strokeStyle = "#222";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(this.x, this.y, this.width, this.height);
+        }
+    }
+}
+Block.image = null;
+
+export class FinishBlock extends Entity {
+    constructor(x, y) {
+        super(x, y, 40, 40, "#FFD700");
     }
     
     draw(ctx) {
         ctx.fillStyle = this.color;
         ctx.fillRect(this.x, this.y, this.width, this.height);
-        ctx.strokeStyle = "#222";
-        ctx.lineWidth = 2;
-        ctx.strokeRect(this.x, this.y, this.width, this.height);
+        
+        ctx.fillStyle = "#FFA500";
+        ctx.font = "bold 24px Arial";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("⭐", this.x + this.width / 2, this.y + this.height / 2);
     }
 }
 
 export class StretchWall extends Block {
-    constructor(x, y, size, direction) {
+    constructor(x, y, size, direction, type = 'attack') {
         super(x, y);
-        this.color = "#38b6ff"; 
+        this.type = type; 
+        this.color = (this.type === 'attack') ? "#38b6ff" : "#00ff88"; 
+        
         this.initialX = x;
         this.initialY = y;
         this.direction = direction; 
         
-        this.currentLength = 40; 
         this.targetLength = size; 
         this.speed = 10;          
-        this.retractSpeed = 2;    
+        this.retractSpeed = 4;    
+
+        this.currentLength = (this.type === 'shy') ? this.targetLength : 40;
+
+        if (!StretchWall.image) {
+            StretchWall.image = new Image();
+            StretchWall.image.src = 'assets/Image/Sprite/mur/mur.png';
+        }
     }
 
     update(deltaTime, worldSpeed, player) {
         if (worldSpeed === 0) return;
 
         let sensorRect = { x: 0, y: 0, width: 0, height: 0 };
-        // AJOUT DES MARGES (C'est ça qui manquait !)
-        const margin = 10; 
+        const margin = 100; 
 
         if (this.direction === 'right') {
-            sensorRect = { x: this.initialX, y: this.initialY - margin, width: this.targetLength + 40 + margin, height: 40 + margin * 2 };
+            sensorRect = { x: this.initialX, y: this.initialY - 10, width: this.targetLength + margin, height: 40 + 20 };
         } else if (this.direction === 'left') {
-            sensorRect = { x: this.initialX - this.targetLength - margin, y: this.initialY - margin, width: this.targetLength + 40 + margin, height: 40 + margin * 2 };
+            sensorRect = { x: this.initialX - this.targetLength - margin, y: this.initialY - 10, width: this.targetLength + margin, height: 40 + 20 };
         } else if (this.direction === 'down') {
-            sensorRect = { x: this.initialX - margin, y: this.initialY, width: 40 + margin * 2, height: this.targetLength + 40 + margin };
+            sensorRect = { x: this.initialX - 10, y: this.initialY, width: 40 + 20, height: this.targetLength + margin };
         } else if (this.direction === 'up') {
-            sensorRect = { x: this.initialX - margin, y: this.initialY - this.targetLength - margin, width: 40 + margin * 2, height: this.targetLength + 40 + margin };
+            sensorRect = { x: this.initialX - 10, y: this.initialY - this.targetLength - margin, width: 40 + 20, height: this.targetLength + margin };
         }
 
         const isPlayerDetected = rectIntersect(player, sensorRect);
 
-        if (isPlayerDetected) {
-            if (this.currentLength < this.targetLength) {
-                this.currentLength += this.speed;
-                if (this.currentLength > this.targetLength) this.currentLength = this.targetLength;
+        if (this.type === 'attack') {
+            if (isPlayerDetected) {
+                if (this.currentLength < this.targetLength) {
+                    this.currentLength += this.speed;
+                    if (this.currentLength > this.targetLength) this.currentLength = this.targetLength;
+                }
+            } else {
+                if (this.currentLength > 40) {
+                    this.currentLength -= this.retractSpeed;
+                    if (this.currentLength < 40) this.currentLength = 40;
+                }
             }
         } else {
-            if (this.currentLength > 40) {
-                this.currentLength -= this.retractSpeed;
-                if (this.currentLength < 40) this.currentLength = 40;
+            if (isPlayerDetected) {
+                if (this.currentLength > 40) {
+                    this.currentLength -= this.speed;
+                    if (this.currentLength < 40) this.currentLength = 40;
+                }
+            } else {
+                if (this.currentLength < this.targetLength) {
+                    this.currentLength += this.retractSpeed;
+                    if (this.currentLength > this.targetLength) this.currentLength = this.targetLength;
+                }
             }
         }
 
         if (this.direction === 'right') {
             this.width = this.currentLength;
             this.height = 40;
-        } 
-        else if (this.direction === 'left') {
+        } else if (this.direction === 'left') {
             this.width = this.currentLength;
             this.height = 40;
             this.x = this.initialX - (this.currentLength - 40); 
-        } 
-        else if (this.direction === 'down') {
+        } else if (this.direction === 'down') {
             this.width = 40;
             this.height = this.currentLength;
-        } 
-        else if (this.direction === 'up') {
+        } else if (this.direction === 'up') {
             this.width = 40;
             this.height = this.currentLength;
             this.y = this.initialY - (this.currentLength - 40); 
         }
+
+        if (rectIntersect(player, this)) {
+            if (this.direction === 'right') {
+                player.x = this.x + this.width + 0.1;
+            } else if (this.direction === 'left') {
+                player.x = this.x - player.width - 0.1;
+            } else if (this.direction === 'down') {
+                player.y = this.y + this.height + 0.1;
+                player.velY = 0;
+            } else if (this.direction === 'up') {
+                player.y = this.y - player.height - 0.1;
+                player.velY = 0;
+                player.isGrounded = true; 
+            }
+        }
     }
     
     draw(ctx) {
-        ctx.fillStyle = this.color;
-        ctx.fillRect(this.x, this.y, this.width, this.height);
-        
-        ctx.strokeStyle = "white";
-        ctx.lineWidth = 2;
-        ctx.strokeRect(this.x, this.y, this.width, this.height);
+        if (!StretchWall.image || !StretchWall.image.complete) {
+            ctx.fillStyle = this.color;
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+            return;
+        }
 
-        ctx.fillStyle = (this.currentLength > 45) ? "#ff0000" : "#00ff00";
-        ctx.fillRect(this.initialX + 10, this.initialY + 10, 20, 20);
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(this.x, this.y, this.width, this.height);
+        ctx.clip();
+
+        const blockSize = 40;
+        
+        if (this.direction === 'right' || this.direction === 'left') {
+            const numBlocks = Math.ceil(this.width / blockSize);
+            for (let i = 0; i < numBlocks; i++) {
+                ctx.drawImage(StretchWall.image, this.x + (i * blockSize), this.y, blockSize, blockSize);
+            }
+        } else {
+            const numBlocks = Math.ceil(this.height / blockSize);
+            for (let i = 0; i < numBlocks; i++) {
+                ctx.drawImage(StretchWall.image, this.x, this.y + (i * blockSize), blockSize, blockSize);
+            }
+        }
+
+        ctx.restore();
     }
 }
-
+StretchWall.image = null;
 export class Player extends Entity { 
     constructor(x, y) {
         super(x, y, 32, 32, "#00ffcc");
         this.velX = 0;
         this.velY = 0;
-        this.speed = 3; 
-        this.jumpForce = -9;
+        this.speed = 8; 
+        this.jumpForce = -6;
         this.isGrounded = false;
         
-        // Anti-Spam Jump
         this.hasReleasedJump = true; 
+        this.jumpCooldown = 0;
     }
 
-    update(input, blocks) {
+    update(input, blocks, correction = 1) {
+        if (this.jumpCooldown > 0) this.jumpCooldown--;
+
         if (input.isPressed(KEYS.RIGHT)) this.velX = this.speed;
         else if (input.isPressed(KEYS.LEFT)) this.velX = -this.speed;
         else this.velX = 0;
 
-        this.x += this.velX;
+        this.x += this.velX * correction;
 
         for (const block of blocks) {
             if (rectIntersect(this, block)) {
@@ -151,20 +230,18 @@ export class Player extends Entity {
             }
         }
 
-        this.velY += 0.3; 
-        this.y += this.velY;
+        this.velY += 0.3 * correction; 
+        this.y += this.velY * correction;
         this.isGrounded = false; 
 
         for (const block of blocks) {
             if (rectIntersect(this, block)) {
                 if (this.velY > 0) { 
-                    // Anti-Téléportation : On vérifie si on est bien au-dessus
                     if (this.y < block.y + 20) {
                         this.y = block.y - this.height - 0.1;
                         this.velY = 0;
                         this.isGrounded = true;
                     } else {
-                        // Sinon on tape la tête ou le côté
                         this.y = block.y + block.height + 0.1;
                         this.velY = 0;
                     }
@@ -182,28 +259,26 @@ export class Player extends Entity {
             this.hasReleasedJump = true;
         }
 
-        if (jumpPressed && this.isGrounded && this.hasReleasedJump) {
+        if (jumpPressed && this.isGrounded && this.hasReleasedJump && this.jumpCooldown <= 0) {
             this.velY = this.jumpForce;
             this.isGrounded = false;
             this.hasReleasedJump = false; 
+            this.jumpCooldown = 10; 
         }
     }
 }
 
 export class PatrolBat extends TimeSensitiveEntity {
     constructor(x, y, endX) {
-        // 1. On garde la hitbox à 40x40 pour qu'elle passe dans les couloirs sans bugger
         super(x, y, 40, 40, "#ff0066"); 
 
         this.startX = x; 
         this.endX = endX; 
-        this.speed = 3;
+        this.speed = 2;
         this.vx = this.speed;
 
-        // 2. On définit une taille VISUELLE plus grande (le sprite)
         this.visualSize = 80; 
 
-        // --- ANIMATION ---
         this.currentFrame = 1; 
         this.animTimer = 0;    
         this.animSpeed = 24;    
@@ -245,7 +320,6 @@ export class PatrolBat extends TimeSensitiveEntity {
         const img = (this.currentFrame === 1) ? PatrolBat.images.frame1 : PatrolBat.images.frame2;
 
         ctx.save();
-
         ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
 
         if (this.vx < 0) {
@@ -253,11 +327,9 @@ export class PatrolBat extends TimeSensitiveEntity {
         }
 
         ctx.drawImage(img, -this.visualSize / 2, -this.visualSize / 2, this.visualSize, this.visualSize);
-
         ctx.restore();
     }
 }
-
 PatrolBat.images = { frame1: null, frame2: null };
 
 export class Spike extends TimeSensitiveEntity {
@@ -265,6 +337,7 @@ export class Spike extends TimeSensitiveEntity {
         super(x, y, 40, 40, "orange");
         this.isFalling = isFalling;
         this.hasFallen = false;
+        this.markedForDeletion = false;
         
         if (!Spike.image) {
             Spike.image = new Image();
@@ -272,12 +345,22 @@ export class Spike extends TimeSensitiveEntity {
         }
     }
 
-    update(deltaTime, worldSpeed, player) {
+    update(deltaTime, worldSpeed, player, blocks) {
         super.update(deltaTime, worldSpeed);
+        
         if (this.isFalling && worldSpeed > 0) {
-            if (!this.hasFallen && Math.abs(player.x - this.x) < 50) {
-                this.vy = 8;
+            if (!this.hasFallen && Math.abs(player.x - this.x) < 50 && player.y > this.y) {
+                this.vy = 4;
                 this.hasFallen = true;
+            }
+
+            if (this.hasFallen) {
+                for (const block of blocks) {
+                    if (rectIntersect(this, block)) {
+                        this.markedForDeletion = true;
+                        break;
+                    }
+                }
             }
         }
     }
@@ -301,7 +384,7 @@ export class Spike extends TimeSensitiveEntity {
 }
 Spike.image = null;
 
- export class Chrono {
+export class Chrono {
      constructor() {
          this.startTime = 0;
          this.elapsed = 0;
