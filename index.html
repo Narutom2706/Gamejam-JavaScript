@@ -2,36 +2,41 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Celeste Time Stop</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Celeste mais le temps s'arrete</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     
     <div id="menu-screen" class="screen">
         <div class="menu-content">
-            <h1>Celeste mais le temps s'arrete</h1>
+            <h1>Celeste mais tu a le pouvoir de Dio</h1>
             <p>ZQSD / Flèches pour bouger</p>
             <p class="highlight">SHIFT pour figer le temps</p>
             <button id="start-btn" class="big-button">LANCER LE JEU</button>
-            <div id="high-score">Meilleur Temps : 0</div>
         </div>
     </div>
 
-    <div id="game-screen" class="screen hidden">
+    <div id="game-screen" class="hidden">
         <canvas id="gameCanvas"></canvas> 
-        <div id="ui-layer">Temps: <span id="timer">0.00</span>s</div>
-        <div id="div_die_counter">Morts : <span id="die_counter">0</span></div>
+        
+        <div id="ui-layer">
+            <div class="hud-box hud-timer">⏱️ <span id="timer">0.00</span>s</div>
+            <div class="hud-box hud-deaths">💀 <span id="die_counter">0</span></div>
+            <div class="hud-box hud-powers">⚡ <span id="timestop_counter">0</span></div>
+        </div>
     </div>
 
     <div id="gameover-screen" class="screen hidden">
-        <h1>GAME OVER</h1>
-        <button id="restart-btn" class="big-button">RECOMMENCER</button>
+        <div class="menu-content">
+            <h1>GAME OVER</h1>
+            <p>Tu as abusé du temps ? (ou alors t'es nul)</p>
+            <button id="restart-btn" class="big-button">RECOMMENCER</button>
+        </div>
     </div>
 
     <audio id="jojo-sound" src="assets/song/zawarudo.mp3"></audio>
-    <img id="jojo-gif" src="assets/Image/zawarudo.gif" class="hidden" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 500px; z-index: 20; pointer-events: none; opacity: 0.9;">
-
+    <img id="jojo-gif" src="assets/Image/zawarudo.gif" class="hidden" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 500px; z-index: 20; pointer-events: none; opacity: 0.4;">
     <script type="module" src="js/main.js"></script>
 </body>
 </html>
