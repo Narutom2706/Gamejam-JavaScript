@@ -206,7 +206,7 @@ export class Player extends Entity {
         this.velX = 0;
         this.velY = 0;
         this.speed = 8; 
-        this.jumpForce = -6;
+        this.jumpForce = -9;
         this.isGrounded = false;
         
         this.hasReleasedJump = true; 
