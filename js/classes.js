@@ -26,8 +26,8 @@ export class TimeSensitiveEntity extends Entity {
     }
 
     update(deltaTime, worldSpeed, player, correction = 1) {
-        this.x += this.vx * worldSpeed;
-        this.y += this.vy * worldSpeed;
+        this.x += this.vx * worldSpeed * correction;
+        this.y += this.vy * worldSpeed * correction; //correction ici ne casse pas tout
     }
 }
 
@@ -94,7 +94,7 @@ export class StretchWall extends Block {
         }
     }
 
-    update(deltaTime, worldSpeed, player) {
+    update(deltaTime, worldSpeed, player, correction = 1) {
         if (worldSpeed === 0) return;
 
         let sensorRect = { x: 0, y: 0, width: 0, height: 0 };
@@ -112,27 +112,30 @@ export class StretchWall extends Block {
 
         const isPlayerDetected = rectIntersect(player, sensorRect);
 
+        const speedCorrected = this.speed * correction;
+        const retractSpeedCorrected = this.retractSpeed * correction;
+
         if (this.type === 'attack') {
             if (isPlayerDetected) {
                 if (this.currentLength < this.targetLength) {
-                    this.currentLength += this.speed;
+                    this.currentLength += speedCorrected;
                     if (this.currentLength > this.targetLength) this.currentLength = this.targetLength;
                 }
             } else {
                 if (this.currentLength > 40) {
-                    this.currentLength -= this.retractSpeed;
+                    this.currentLength -= retractSpeedCorrected;
                     if (this.currentLength < 40) this.currentLength = 40;
                 }
             }
         } else {
             if (isPlayerDetected) {
                 if (this.currentLength > 40) {
-                    this.currentLength -= this.speed;
+                    this.currentLength -= speedCorrected;
                     if (this.currentLength < 40) this.currentLength = 40;
                 }
             } else {
                 if (this.currentLength < this.targetLength) {
-                    this.currentLength += this.retractSpeed;
+                    this.currentLength += retractSpeedCorrected;
                     if (this.currentLength > this.targetLength) this.currentLength = this.targetLength;
                 }
             }
@@ -291,8 +294,8 @@ export class PatrolBat extends TimeSensitiveEntity {
         }
     }
 
-    update(deltaTime, worldSpeed) {
-        super.update(deltaTime, worldSpeed); //ne pas mettre correction ici
+    update(deltaTime, worldSpeed, player, blocks, correction) {
+        super.update(deltaTime, worldSpeed, player, correction); //ne pas mettre correction ici
         
         if (worldSpeed > 0) {
             if (this.x >= this.endX) {
@@ -303,7 +306,7 @@ export class PatrolBat extends TimeSensitiveEntity {
                 this.vx = this.speed;
             }
 
-            this.animTimer++;
+            this.animTimer+= correction;
             if (this.animTimer >= this.animSpeed) {
                 this.animTimer = 0;
                 this.currentFrame = (this.currentFrame === 1) ? 2 : 1;
@@ -345,8 +348,8 @@ export class Spike extends TimeSensitiveEntity {
         }
     }
 
-    update(deltaTime, worldSpeed, player, blocks) {
-        super.update(deltaTime, worldSpeed);
+    update(deltaTime, worldSpeed, player, blocks, correction) {
+        super.update(deltaTime, worldSpeed, player, correction);
         
         if (this.isFalling && worldSpeed > 0) {
             if (!this.hasFallen && Math.abs(player.x - this.x) < 50 && player.y > this.y) {
