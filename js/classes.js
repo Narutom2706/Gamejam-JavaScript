@@ -292,7 +292,7 @@ export class PatrolBat extends TimeSensitiveEntity {
     }
 
     update(deltaTime, worldSpeed) {
-        super.update(deltaTime, worldSpeed);
+        super.update(deltaTime, worldSpeed); //ne pas mettre correction ici
         
         if (worldSpeed > 0) {
             if (this.x >= this.endX) {
