@@ -5,9 +5,9 @@ export const PLAYER_SPEED = 5;
 export const JUMP_FORCE = -12;
 
 export const KEYS = {
-    UP: ['ArrowUp','z','Z'],
-    LEFT: ['ArrowLeft','Q','q'],
-    RIGHT: ['ArrowRight','D','d'],
-    JUMP: ['ArrowUp','z','Z'],
-    TIME_STOP: ['Shift']
+    UP: ['ArrowUp','z'],   
+    LEFT: ['ArrowLeft','q'],  
+    RIGHT: ['ArrowRight','d'],
+    JUMP: ['ArrowUp','z',' '],
+    TIME_STOP: ['shift']      
 }

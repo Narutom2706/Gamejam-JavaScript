@@ -203,6 +203,7 @@ export class StretchWall extends Block {
     }
 }
 StretchWall.image = null;
+
 export class Player extends Entity { 
     constructor(x, y) {
         super(x, y, 32, 32, "#00ffcc");
@@ -214,6 +215,9 @@ export class Player extends Entity {
         
         this.hasReleasedJump = true; 
         this.jumpCooldown = 0;
+
+        this.trail = []; 
+        this.trailCounter = 0;
     }
 
     update(input, blocks, correction = 1) {
@@ -268,6 +272,36 @@ export class Player extends Entity {
             this.hasReleasedJump = false; 
             this.jumpCooldown = 10; 
         }
+                for (let i = this.trail.length - 1; i >= 0; i--) {
+            this.trail[i].alpha -= 0.08 * correction; // Vitesse de disparition
+            if (this.trail[i].alpha <= 0) {
+                this.trail.splice(i, 1);
+            }
+        }
+        // Si le joueur bouge on ajoute un fantôme
+        if (Math.abs(this.velX) > 0.1 || Math.abs(this.velY) > 0.1) {
+            this.trailCounter++;
+            if (this.trailCounter >= 1) { // Créer un fantôme toutes les X frames
+                this.trail.push({
+                    x: this.x,
+                    y: this.y,
+                    alpha: 0.6 // Transparence de départ
+                });
+                this.trailCounter = 0;
+            }
+        }
+    }
+        draw(ctx) {
+        this.trail.forEach(ghost => {
+            ctx.save();
+            ctx.globalAlpha = ghost.alpha; // Applique la transparence
+            ctx.fillStyle = "#008268";    
+            ctx.fillRect(ghost.x, ghost.y, this.width, this.height);
+            ctx.restore();
+        });
+
+        // 2. DESSINER LE JOUEUR
+        super.draw(ctx);
     }
 }
 
@@ -277,7 +311,7 @@ export class PatrolBat extends TimeSensitiveEntity {
 
         this.startX = x; 
         this.endX = endX; 
-        this.speed = 2;
+        this.speed = 4;
         this.vx = this.speed;
 
         this.visualSize = 80; 
@@ -353,7 +387,7 @@ export class Spike extends TimeSensitiveEntity {
         
         if (this.isFalling && worldSpeed > 0) {
             if (!this.hasFallen && Math.abs(player.x - this.x) < 50 && player.y > this.y) {
-                this.vy = 4;
+                this.vy = 12;
                 this.hasFallen = true;
             }
 

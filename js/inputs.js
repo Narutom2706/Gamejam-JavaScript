@@ -3,21 +3,35 @@ export class InputHandler {
         this.keys = []; 
 
         window.addEventListener('keydown', (e) => {
-            if (this.keys.indexOf(e.key) === -1) {
-                this.keys.push(e.key);
+            // On convertit toujours en minuscule
+            const key = e.key.toLowerCase(); 
+
+            if (this.keys.indexOf(key) === -1) {
+                this.keys.push(key);
             }
-            // console.log("Touche pressée :", e.key); 
         });
 
         window.addEventListener('keyup', (e) => {
-            this.keys.splice(this.keys.indexOf(e.key), 1);
+            const key = e.key.toLowerCase();
+            const index = this.keys.indexOf(key);
+            
+            // On ne splice que si la touche existe vraiment
+            if (index > -1) {
+                this.keys.splice(index, 1);
+            }
+        });
+
+        // Si on quitte la fenêtre plus rien marche
+        window.addEventListener('blur', () => {
+            this.keys = [];
         });
     }
 
     isPressed(allowedKeys) {
+        // permet de vérifier si une ou plusieurs touches sont pressées
         if (Array.isArray(allowedKeys)) {
-            return allowedKeys.some(key => this.keys.includes(key));
+            return allowedKeys.some(k => this.keys.includes(k.toLowerCase()));
         }
-        return this.keys.includes(allowedKeys);
+        return this.keys.includes(allowedKeys.toLowerCase());
     }
 }
