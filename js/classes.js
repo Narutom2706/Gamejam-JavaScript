@@ -83,7 +83,7 @@ export class StretchWall extends Block {
         this.direction = direction; 
         
         this.targetLength = size; 
-        this.speed = 10;          
+        this.speed = 30;          
         this.retractSpeed = 4;    
 
         this.currentLength = (this.type === 'shy') ? this.targetLength : 40;
@@ -210,7 +210,7 @@ export class Player extends Entity {
         this.velX = 0;
         this.velY = 0;
         this.speed = 8; 
-        this.jumpForce = -9;
+        this.jumpForce = -14;
         this.isGrounded = false;
         
         this.hasReleasedJump = true; 
@@ -237,7 +237,7 @@ export class Player extends Entity {
             }
         }
 
-        this.velY += 0.3 * correction; 
+        this.velY += 0.7 * correction; 
         this.y += this.velY * correction;
         this.isGrounded = false; 
 
@@ -348,7 +348,8 @@ export class PatrolBat extends TimeSensitiveEntity {
         }
     }
 
-    draw(ctx) {
+draw(ctx) {
+        // Vérification que les images sont chargées
         if (!PatrolBat.images.frame1 || !PatrolBat.images.frame1.complete || !PatrolBat.images.frame2.complete) {
              super.draw(ctx);
              return;
@@ -359,11 +360,16 @@ export class PatrolBat extends TimeSensitiveEntity {
         ctx.save();
         ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
 
-        if (this.vx < 0) {
-            ctx.scale(-1, 1);
-        }
+        // Axe X : Si vx < 0 (va à gauche), on inverse (-1), sinon normal (1)
+        let dirX = (this.vx < 0) ? 1 : -1;
+        
+        let dirY = 1;
+        
+        ctx.scale(dirX, dirY);
 
+        // On dessine l'image centrée
         ctx.drawImage(img, -this.visualSize / 2, -this.visualSize / 2, this.visualSize, this.visualSize);
+
         ctx.restore();
     }
 }
