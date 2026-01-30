@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Pirata+One&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Celeste mais le temps s'arrete</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    
+    <div id="menu-screen" class="screen">
+        <div class="menu-content">
+            <h1>Celeste mais le temps s'arrete</h1>
+            <p> Z ou fleche du haut pour sauter</p>
+            <p> Q - D ou fleche droite gauche pour bouger</p>
+            <p class="highlight">SHIFT pour figer le temps</p>
+            <p class="highlight">R pour recommencer le niveau</p>
+            <p> Pour avoir le meilleur score : </p>
+            <p class ="highlight"> Atteindre l'arrivé avec le moins de mort et le moins d'utilisation du pouvoir</p>
+            <p class="highlight">🏆 Meilleur Score : <span id="best-score-display">--</span></p>
+            
+            <div class="scoreboard">
+                <h3>Tableau des scores </h3>
+                <div id="score-list" class="score-list">Aucun score pour l'instant</div>
+                <div style="margin-top:12px;">
+                    <button id="clear-scores" class="small-button">Effacer scores</button>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 20px; justify-content: center; align-items: center; margin-top: 30px;">
+                <button id="level-tuto-btn" class="big-button level-btn-style" style="background-color: #38b6ff; color:#000;">
+                    TUTO<br>(le tuto quoi)
+                </button>
+                
+                <button id="level1-btn" class="big-button level-btn-style">
+                    NIVEAU 1<br>(Par défaut)
+                </button>
+                
+                <button id="level2-btn" class="big-button level-btn-style">
+                    NIVEAU 2<br>(Mahé)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-screen" class="hidden">
+        <canvas id="gameCanvas"></canvas> 
+        <div id="ui-layer">
+            <div class="hud-box hud-timer">⏱️ <span id="timer">0.00</span>s</div>
+            <div class="hud-box hud-deaths">💀 <span id="die_counter">0</span></div>
+            <div class="hud-box hud-powers">⚡ <span id="timestop_counter">0</span></div>
+        </div>
+    </div>
+
+    <div id="finish-screen" class="screen hidden">
+        <div class="menu-content" id="finish-menu-box">
+            <h1 style="font-family: 'Pirata One', cursive; font-size: 3rem; margin-bottom: 10px;">Niveau fini</h1>
+            
+            <div class="dmc-result-box">
+                <div class="rank-display">
+                    <span id="final-rank" class="rank-letter">-</span>
+                    <div id="rank-text" class="rank-subtitle">...</div>
+                </div>
+
+                <div class="gif-display">
+                    <video id="rank-video" class="hidden" autoplay loop muted playsinline>
+                        <source src="" type="video/mp4">
+                    </video>
+                    <img id="rank-image" class="hidden" src="" alt="Rank Animation">
+                </div>
+
+                <div class="stats-display">
+                    <p>Temps : <span id="final-time">0.00</span>s</p>
+                    <p>Morts : <span id="final-deaths">0</span></p>
+                    <p>Pouvoirs : <span id="final-timestops">0</span> <small>(+20s)</small></p>
+                    <hr>
+                    <h2 style="font-family: 'Pirata One', cursive; letter-spacing: 2px;">SCORE : <span id="final-score">0</span></h2>
+                </div>
+            </div>
+            
+            <div class="name-input" style="margin-top:20px; display: flex; justify-content: center; align-items: center;">
+                <label for="player-name" style="font-size:0.9rem; color:#fff; margin-right:15px; font-family: 'Press Start 2P';">Nom :</label>
+                <input id="player-name" type="text" maxlength="20" placeholder="Ton nom" style="padding: 10px; width: 200px; text-align: center;" />
+            </div>
+
+            <div style="display:flex; gap:15px; justify-content:center; align-items:center; margin-top:25px;">
+                <button id="save-score-btn" class="big-button" style="font-size: 0.7rem; background-color: #ff3366; color: white; padding: 15px 20px;">
+                    ENREGISTRER<br>LE SCORE
+                </button>
+                
+                <button id="restart-btn" class="big-button" style="font-size: 0.7rem; padding: 15px 20px;">
+                    REJOUER
+                </button>
+                
+                <button id="menu-return-btn" class="big-button" style="font-size: 0.7rem; background-color: #ff3366; color: white; padding: 15px 20px;">
+                    MENU<br>PRINCIPAL
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
